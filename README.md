@@ -2,6 +2,7 @@
 
 ## Estructura de carpetas
 
+```
 src/
 ├─ app.ts
 ├─ server.ts
@@ -11,3 +12,4 @@ src/
 │ └─ todo.controller.ts
 ├─ models/
 │ └─ todo.model.ts
+```
