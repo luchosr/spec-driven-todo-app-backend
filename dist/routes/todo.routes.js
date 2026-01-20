@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const todo_controller_1 = require("../controllers/todo.controller");
+const validate_1 = require("../middlewares/validate");
+const todo_schema_1 = require("../schemas/todo.schema");
+const router = (0, express_1.Router)();
+router.get('/', todo_controller_1.getTodos);
+router.post('/', (0, validate_1.validate)(todo_schema_1.createTodoSchema), todo_controller_1.createTodo);
+router.patch('/:id', (0, validate_1.validate)(todo_schema_1.updateTodoSchema), todo_controller_1.updateTodo);
+router.delete('/:id', (0, validate_1.validate)(todo_schema_1.deleteTodoSchema), todo_controller_1.deleteTodo);
+exports.default = router;

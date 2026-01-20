@@ -7,5 +7,14 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["prisma.config.ts", "node_modules"]
+  // "compilerOptions": {
+  //   "module": "ESNext",
+  //   "moduleResolution": "node",
+  //   "target": "ES2023",
+  //   "strict": true,
+  //   "esModuleInterop": true,
+  //   "ignoreDeprecations": "6.0"
+  // }
 }

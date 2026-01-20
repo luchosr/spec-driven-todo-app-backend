@@ -1,52 +1,61 @@
 import { Request, Response } from 'express';
-import { Todo } from '../models/todo.model';
-import { randomUUID } from 'crypto';
+import { prisma } from '../lib/prisma';
 
-const todos: Todo[] = [];
+export const getTodos = async (_req: Request, res: Response) => {
+  const todos = await prisma.todo.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
 
-export const getTodos = (_req: Request, res: Response) => {
   res.json(todos);
 };
 
-export const createTodo = (req: Request, res: Response) => {
+export const createTodo = async (req: Request, res: Response) => {
   const { title } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
 
-  const newTodo: Todo = {
-    id: randomUUID(),
-    title,
-    completed: false,
-  };
+  const todo = await prisma.todo.create({
+    data: { title },
+  });
 
-  todos.push(newTodo);
-  res.status(201).json(newTodo);
+  res.status(201).json(todo);
 };
 
-export const updateTodo = (req: Request, res: Response) => {
+export const updateTodo = async (req: Request, res: Response) => {
   const { id } = req.params;
+
+  if (typeof id !== 'string') {
+    return res.status(400).json({ error: 'Invalid id' });
+  }
+
   const { completed } = req.body;
 
-  const todo = todos.find((t) => t.id === id);
+  try {
+    const todo = await prisma.todo.update({
+      where: { id },
+      data: { completed },
+    });
 
-  if (!todo) {
-    return res.status(404).json({ error: 'Todo not found' });
+    res.json(todo);
+  } catch {
+    res.status(404).json({ error: 'Todo not found' });
   }
-
-  todo.completed = completed ?? todo.completed;
-  res.json(todo);
 };
 
-export const deleteTodo = (req: Request, res: Response) => {
+export const deleteTodo = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const index = todos.findIndex((t) => t.id === id);
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Todo not found' });
+  if (typeof id !== 'string') {
+    return res.status(400).json({ error: 'Invalid id' });
   }
-
-  todos.splice(index, 1);
-  res.status(204).send();
+  try {
+    await prisma.todo.delete({
+      where: { id },
+    });
+    res.status(204).send();
+  } catch {
+    res.status(404).json({ error: 'Todo not found' });
+  }
 };
